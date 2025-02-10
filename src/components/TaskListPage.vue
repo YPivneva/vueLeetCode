@@ -1,22 +1,26 @@
 <template>
-  <h2>Главная страница</h2>
-  <div>
-    <h3>Список задач</h3>
-    <div class="content-list">
-      <ul class="list-task">
-        <li v-for="onetask in filteredTasks" :key="onetask.id">
-          <!-- <a href="#" target="_blank" rel="noopener noreferrer">
-              <h3>{{ onetask.title }}</h3>
-            </a> -->
-          <router-link :to="'/task/' + onetask.id">{{ onetask.title }}</router-link>
-          <p>Уровень сложности: {{ onetask.difficulty }}</p>
-          <p>Категория: {{ onetask.category }}</p>
-          <!-- <p>Имя пользователя: {{ users[one.userid].username }}</p> -->
-          <!-- <p v-for="onetask.userid in filteredList">{{ users.username }}</p> -->
-        </li>
-      </ul>
+  <TaskListPage>
+    <h2>Главная страница</h2>
+    <div>
+      <h3>Список задач</h3>
+      <div class="content-list">
+        <ul class="list-task">
+          <li v-for="task in tasks" :key="task.id_list">{{ task.title }}</li>
+
+          <li v-for="onetask in filteredTasks" :key="onetask.id">
+            <!-- <a href="#" target="_blank" rel="noopener noreferrer">
+                <h3>{{ onetask.title }}</h3>
+              </a> -->
+            <router-link :to="'/task/' + onetask.id">{{ onetask.title }}</router-link>
+            <p>Уровень сложности: {{ onetask.difficulty }}</p>
+            <p>Категория: {{ onetask.category }}</p>
+            <!-- <p>Имя пользователя: {{ users[one.userid].username }}</p> -->
+            <!-- <p v-for="onetask.userid in filteredList">{{ users.username }}</p> -->
+          </li>
+        </ul>
+      </div>
     </div>
-  </div>
+  </TaskListPage>
 </template>
 
 <script>
@@ -25,12 +29,16 @@ import { useTaskStore } from '../stores/useTaskStore'
 export default {
   setup() {
     const taskStore = useTaskStore()
-    taskStore.loadTasks() // Загружаем задачи при создании компонента
+    const loadTasks = () => {
+      taskStore.setTasks() // Загружаем задачи из api.js
+    }
 
-    return { taskStore }
+    return {
+      tasks: taskStore.tasks,
+      loadTasks,
+    }
   },
   props: {
-    tasks: Array,
     filters: Object,
   },
   computed: {

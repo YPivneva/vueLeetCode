@@ -1,4 +1,5 @@
 <template>
+  <UserProfile>
     <div class="user-profile">
       <h1>Профиль пользователя: {{ user.username }}</h1>
       <p><strong>Решенные задачи:</strong> {{ user.solvedTasks.length }}</p>
@@ -16,23 +17,24 @@
       </ul>
       <router-link to="/">Назад к списку задач</router-link>
     </div>
-  </template>
-  
-  <script>
-    import { useUserStore } from '../stores/useUserStore';
+  </UserProfile>
+</template>
 
-    export default {
-      setup() {
-        const userStore = useUserStore();
-        const user = userStore.currentUser ; // Получите текущего пользователя из хранилища
+<script>
+import { useUserStore } from '../stores/useUserStore'
 
-        return { user };
-      },
-    };
-  </script>
-  
-  <style scoped>
-  .user-profile {
-    padding: 20px;
-  }
-  </style>
+export default {
+  setup() {
+    const userStore = useUserStore()
+    const user = userStore.currentUser // Получите текущего пользователя из хранилища
+
+    return { user }
+  },
+}
+</script>
+
+<style scoped>
+.user-profile {
+  padding: 20px;
+}
+</style>

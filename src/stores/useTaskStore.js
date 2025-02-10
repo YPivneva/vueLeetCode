@@ -1,13 +1,14 @@
 import { defineStore } from 'pinia'
+import { tasks } from '../api'
 
 export const useTaskStore = defineStore('task', {
   state: () => ({
-    tasks: [],
+    tasks: [], // Изначально пустой массив
     error: null,
   }),
   actions: {
-    setTasks(tasks) {
-      this.tasks = tasks
+    setTasks() {
+      this.tasks = tasks // Устанавливаем импортированные задачи в состояние
     },
   },
   getters: {
