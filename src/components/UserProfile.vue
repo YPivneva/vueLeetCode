@@ -1,36 +1,41 @@
 <template>
-  <UserProfile>
-    <div class="user-profile">
-      <h1>Профиль пользователя: {{ user.username }}</h1>
-      <p><strong>Решенные задачи:</strong> {{ user.solvedTasks.length }}</p>
+  <div class="user-profile">
+    <div v-if="currentUser">
+      <h1>Профиль пользователя: {{ currentUser.username }}</h1>
+      <p><strong>Решенные задачи:</strong> {{ currentUser.solvedTasks.length }}</p>
       <h2>Статистика:</h2>
       <ul>
-        <li>Легкие: {{ user.stats.easy }}</li>
-        <li>Средние: {{ user.stats.medium }}</li>
-        <li>Сложные: {{ user.stats.hard }}</li>
+        <li>Легкие: {{ currentUser.difficulty.easy }}</li>
+        <li>Средние: {{ currentUser.difficulty.medium }}</li>
+        <li>Сложные: {{ currentUser.difficulty.hard }}</li>
       </ul>
       <h2>Решенные задачи:</h2>
       <ul>
-        <li v-for="task in user.solvedTasks" :key="task.id">
-          <router-link :to="'/task/' + task.id">{{ task.title }}</router-link>
+        <li v-for="task in currentUser.solvedTasks" :key="task.id_list">
+          <router-link :to="'/task/' + task.id_list">{{ task.title }}</router-link>
         </li>
       </ul>
-      <router-link to="/">Назад к списку задач</router-link>
     </div>
-  </UserProfile>
+    <div v-else>
+      <p>Пользователь не найден</p>
+    </div>
+    <router-link to="/" class="back-link">Назад к списку задач</router-link>
+  </div>
 </template>
 
-<script>
+<script setup>
+import { computed } from 'vue'
+import { useRoute } from 'vue-router'
 import { useUserStore } from '../stores/useUserStore'
+import { users } from '../api'
 
-export default {
-  setup() {
-    const userStore = useUserStore()
-    const user = userStore.currentUser // Получите текущего пользователя из хранилища
+const route = useRoute()
+const userStore = useUserStore()
+const userId = parseInt(route.params.id)
 
-    return { user }
-  },
-}
+const currentUser = computed(() => {
+  return users.find((user) => user.userid === userId)
+})
 </script>
 
 <style scoped>

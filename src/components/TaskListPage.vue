@@ -1,65 +1,53 @@
 <template>
-  <TaskListPage>
+  <div class="task-list-page">
     <h2>Главная страница</h2>
     <div>
       <h3>Список задач</h3>
       <div class="content-list">
         <ul class="list-task">
-          <li v-for="task in tasks" :key="task.id_list">{{ task.title }}</li>
-
-          <li v-for="onetask in filteredTasks" :key="onetask.id">
-            <!-- <a href="#" target="_blank" rel="noopener noreferrer">
-                <h3>{{ onetask.title }}</h3>
-              </a> -->
-            <router-link :to="'/task/' + onetask.id">{{ onetask.title }}</router-link>
-            <p>Уровень сложности: {{ onetask.difficulty }}</p>
-            <p>Категория: {{ onetask.category }}</p>
-            <!-- <p>Имя пользователя: {{ users[one.userid].username }}</p> -->
-            <!-- <p v-for="onetask.userid in filteredList">{{ users.username }}</p> -->
+          <li v-for="task in filteredTasks" :key="task.id">
+            <router-link :to="'/task/' + task.id">{{ task.title }}</router-link>
+            <p>Уровень сложности: {{ task.difficulty }}</p>
+            <p>Категория: {{ task.category }}</p>
           </li>
         </ul>
       </div>
     </div>
-  </TaskListPage>
+  </div>
 </template>
 
-<script>
+<script setup>
+import { ref, computed, onMounted } from 'vue'
 import { useTaskStore } from '../stores/useTaskStore'
 
-export default {
-  setup() {
-    const taskStore = useTaskStore()
-    const loadTasks = () => {
-      taskStore.setTasks() // Загружаем задачи из api.js
-    }
+const taskStore = useTaskStore()
 
-    return {
-      tasks: taskStore.tasks,
-      loadTasks,
-    }
-  },
-  props: {
-    filters: Object,
-  },
-  computed: {
-    filteredTasks() {
-      return this.tasks.filter((task) => {
-        const matchesDifficulty = this.filters.difficulty
-          ? task.difficulty === this.filters.difficulty
-          : true
-        const matchesCategory = this.filters.category
-          ? task.category === this.filters.category
-          : true
-        return matchesDifficulty && matchesCategory
-      })
-    },
-  },
-}
+// Инициализируем store при монтировании компонента
+onMounted(() => {
+  taskStore.setTasks()
+})
+
+const filters = ref({
+  difficulty: null,
+  category: null,
+})
+
+// Вычисляемое свойство для фильтрации задач
+const filteredTasks = computed(() => {
+  return taskStore.tasks.filter((task) => {
+    const matchesDifficulty = filters.value.difficulty
+      ? task.difficulty === filters.value.difficulty
+      : true
+    const matchesCategory = filters.value.category ? task.category === filters.value.category : true
+    return matchesDifficulty && matchesCategory
+  })
+})
 </script>
 
 <style scoped>
 .content-list {
   text-align: left;
+  color: red;
 }
 .list-task {
   list-style: none;

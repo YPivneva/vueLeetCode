@@ -1,32 +1,38 @@
 <template>
-  <TaskPage>
-    <div class="task-page">
-      <h1>{{ tasks[2].title }}</h1>
-      <p><strong>Описание:</strong> {{ tasks[2].description }}</p>
-      <div v-if="tasks[2].comments > 0">
+  <div class="task-page">
+    <div v-if="currentTask">
+      <h1>{{ currentTask.title }}</h1>
+      <p><strong>Описание:</strong> {{ currentTask.description }}</p>
+      <div v-if="currentTask.comments && currentTask.comments.length > 0">
         <h5>Комментарии:</h5>
-        <div v-for="comment in tasks[2].comments" :key="comment.input">
+        <div v-for="comment in currentTask.comments" :key="comment.id">
           <p>
-            <strong>{{ key }}:</strong> {{ comment.input }}
+            <strong>{{ comment.createdat }}:</strong> {{ comment.description }}
           </p>
         </div>
       </div>
     </div>
-  </TaskPage>
+    <div v-else>
+      <p>Задача не найдена</p>
+    </div>
+  </div>
 </template>
 
-<script>
+<script setup>
+import { computed } from 'vue'
+import { useRoute } from 'vue-router'
 import { useTaskStore } from '../stores/useTaskStore'
 
-export default {
-  setup() {
-    const taskStore = useTaskStore()
-    const tasks = taskStore.currentTask // Получить текущую запись из хранилища
-    const taskId = this.$route.params.id
+const route = useRoute()
+const taskStore = useTaskStore()
+const taskId = parseInt(route.params.id)
 
-    return (this.task = tasks.find((task) => task.id === taskId) || {})
-  },
-}
+// Инициализируем store при монтировании компонента
+taskStore.setTasks()
+
+const currentTask = computed(() => {
+  return taskStore.tasks.find((task) => task.id === taskId)
+})
 </script>
 
 <style scoped>
